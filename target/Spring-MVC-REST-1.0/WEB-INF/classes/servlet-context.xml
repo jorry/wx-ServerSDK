@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<mvc:annotation-driven />
+	<context:component-scan base-package="com.taynio" />
+
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="order" value="1" />
+		<property name="favorParameter" value="false" />
+		<property name="ignoreAcceptHeader" value="true" />
+
+		<!-- 在没有扩展名时即: "/user/1" 时的默认展现形式 -->
+		<property name="defaultContentType" value="application/json" />
+		<property name="mediaTypes">
+			<map>
+				<entry key="json" value="application/json" />
+				<entry key="xml" value="application/xml" />
+				<entry key="html" value="text/html" />
+				<entry key="pdf" value="application/pdf" />
+				<entry key="xsl" value="application/vnd.ms-excel" />
+			</map>
+		</property>
+		<property name="viewResolvers">
+			<list>
+				<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+				<bean
+					class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="prefix" value="/WEB-INF/views/" />
+					<property name="suffix" value=".jsp" />
+				</bean>
+			</list>
+		</property>
+		<property name="defaultViews">
+			<list>
+				<bean id="jsonView"
+					class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+				<bean id="xmlView"
+					class="org.springframework.web.servlet.view.xml.MarshallingView">
+					<constructor-arg>
+						<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+							<property name="packagesToScan">
+								<list>
+									<value>com.taynio.dto</value>
+								</list>
+							</property>
+							<!-- or  <property name="classesToBeBound">
+								<list>
+									<value>com.taynio.dto.UserInfo</value>
+									<value>com.taynio.dto.ListBean</value>
+								</list>
+							</property> -->
+						</bean>
+					</constructor-arg>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+</beans>
